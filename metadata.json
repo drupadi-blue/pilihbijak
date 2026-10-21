@@ -1,0 +1,6 @@
+{
+  "name": "PILIH BIJAK! - Simulasi Keuangan Syariah Keluarga",
+  "description": "Website permainan interaktif simulasi keputusan keuangan keluarga berbasis nilai syariah untuk edukasi literasi keuangan PKK.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
