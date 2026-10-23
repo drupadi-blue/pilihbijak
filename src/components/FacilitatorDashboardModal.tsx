@@ -64,7 +64,10 @@ export const FacilitatorDashboardModal: React.FC<FacilitatorDashboardModalProps>
     text += `Rata-rata Peningkatan Wawasan: +${avgGain} Poin\n`;
     text += `Skor Tertinggi Kasus: ${highestScore}/100 Poin\n\n`;
     text += `*Daftar Peringkat Peserta:*\n`;
-    sessions.slice(0, 15).forEach((s, i) => {
+    const ranked = [...sessions].sort(
+      (a, b) => b.scoreBreakdown.totalScore - a.scoreBreakdown.totalScore
+    );
+    ranked.slice(0, 15).forEach((s, i) => {
       text += `${i + 1}. ${s.participant.name} (${s.participant.rtRwVillage}) - Skor Kasus: ${s.scoreBreakdown.totalScore} Poin (Pre: ${s.preQuizScore} ➔ Post: ${s.postQuizScore})\n`;
     });
     text += `\n_“Bukan Sekadar Hemat, tetapi Tepat.”_\nDiselenggarakan oleh Bank Syariah Indonesia (BSI) & PKK`;
