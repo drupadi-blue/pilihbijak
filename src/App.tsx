@@ -244,11 +244,15 @@ export default function App() {
       const stored = localStorage.getItem('bsi_pilih_bijak_sessions');
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        // An empty list means the board was reset, so don't re-seed the demo sessions
+        if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {}
     return INITIAL_DEMO_SESSIONS;
   });
+
+  // Leaderboard entry of the current participant, reused when the post-test is retaken
+  const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -262,6 +266,10 @@ export default function App() {
   };
 
   const handleSaveParticipant = (info: ParticipantInfo) => {
+    // Different name means a different person, so they get their own entry
+    if (activeParticipant && activeParticipant.name.toLowerCase() !== info.name.toLowerCase()) {
+      setSavedSessionId(null);
+    }
     setActiveParticipant(info);
   };
 
@@ -346,8 +354,11 @@ export default function App() {
 
     const breakdown = currentScoreBreakdown || calculateScore(currentDecisions);
 
+    const sessionId = savedSessionId || 'session-' + Date.now();
+    setSavedSessionId(sessionId);
+
     const newSession: CompletedSession = {
-      id: 'session-' + Date.now(),
+      id: sessionId,
       timestamp: Date.now(),
       participant: participantInfo,
       preQuizScore: preQuizResult ? preQuizResult.score : 50,
@@ -358,7 +369,7 @@ export default function App() {
     };
 
     setCompletedSessions((prev) => {
-      const updated = [newSession, ...prev];
+      const updated = [newSession, ...prev.filter((s) => s.id !== sessionId)];
       try {
         localStorage.setItem('bsi_pilih_bijak_sessions', JSON.stringify(updated));
       } catch (e) {}
@@ -368,6 +379,7 @@ export default function App() {
 
   const handleStartNewParticipant = () => {
     setActiveParticipant(null);
+    setSavedSessionId(null);
     setCurrentDecisions([]);
     setCurrentScoreBreakdown(null);
     setPreQuizResult(null);
